@@ -55,11 +55,6 @@ export async function updateBorrowingHistoryStatusById(id: string) {
 export async function borrowedBookMoreThan(noOfTimes: number) {
 	return await BorrowingHistory.aggregate([
 		{
-			$match: {
-				status: "BORROWED"
-			}
-		},
-		{
 			$group: {
 				_id: "$userId",
 				borrowCount: { $sum: 1 }
@@ -100,9 +95,26 @@ export async function totalBorrowedBooksPerUser() {
 			}
 		},
 		{
+			$lookup: {
+				from: 'books',
+				localField: 'bookId',
+				foreignField: '_id',
+				as: "bookDetails",
+				pipeline: [
+					{
+						$project: { _id: 0, __v: 0, quantity: 0 }
+					}
+				]
+			}
+		},
+		{
+			$unwind: "$bookDetails"
+		},
+		{
 			$group: {
 				_id: "$userId",
-				borrowCount: {$sum: 1}
+				borrowCount: {$sum: 1},
+				books: { $push: "$bookDetails"}
 			}
 		},
 		{
@@ -120,7 +132,8 @@ export async function totalBorrowedBooksPerUser() {
 			$project: {
 				_id: 0,
 				userId: "$userDetails._id",
-				Name: "$userDetails.name",
+				name: "$userDetails.name",
+				books: "$books",
 				borrowCount: "$borrowCount"
 			}
 		}

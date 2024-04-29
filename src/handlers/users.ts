@@ -67,9 +67,7 @@ export async function deleteUserById(req: Request, res: Response, next: NextFunc
 	req.action = 'deleteUserById';
 	try {
 		const id = req.params.id;
-
 		const response = await userSchema.deleteUserById(id);
-
 		if (!response) {
 			return apiUtils.USER_RESPONSES.USER_NOT_FOUND(res);
 		}
