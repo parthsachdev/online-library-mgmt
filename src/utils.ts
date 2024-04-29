@@ -2,7 +2,7 @@ import config from 'config';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { User } from './types';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 export function hashPassword(password: string): string {
 	const salt = config.get('auth.salt') as string;
@@ -46,4 +46,14 @@ export function decodeJWTFromHeader(req: Request, res: Response, next: NextFunct
 		role: userObj.payload.role
 	};
 	next();
+}
+
+export function allowedRolesHandler(allowedRoles: Array<string>): RequestHandler {
+	return async (req: Request, res: Response, next: NextFunction) => {
+		const userRole = req.user?.role ?? '';
+		if (!allowedRoles.includes(userRole)) {
+			return res.status(403).json({message: 'Unauthorized operation'});
+		}
+		next();
+	}
 }
