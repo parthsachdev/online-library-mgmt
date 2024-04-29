@@ -1,0 +1,17 @@
+{
+	"mongo": {
+		"connectionString": "mongodb+srv://nextechar:nextechar@cluster0.fwfc7ur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+	},
+	"server": {
+		"port": 8000
+	},
+	"auth": {
+		"salt": "secret-salt",
+		"iterations": 1000,
+		"keylen": 64,
+		"digest": "sha512",
+		"jwtSecret": "jwt-secret",
+		"jwtExpiry": "365d",
+		"otp": "12345678"
+	}
+}
